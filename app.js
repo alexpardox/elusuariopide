@@ -283,7 +283,8 @@ function renderBoard(turnId) {
             <h2>${escapeHtml(category.nombre)}</h2>
             <p>${isDisabled ? 'Esta tarjeta está bloqueada para forzar elegir otra opción.' : 'Haz clic para pedir un requerimiento aleatorio de esta categoría.'}</p>
           </div>
-          <div class="foot">Color asignado: ${category.colorHex}</div>
+          <div class="foot"></div>
+          <!-- <div class="foot">Color asignado: ${category.colorHex}</div> -->
         </button>
       `;
     })
@@ -383,7 +384,7 @@ function showRequestToast(requirement) {
     return;
   }
 
-  requestText.textContent = `El usuario pide saber el estatus de: ${requirement}`;
+  requestText.textContent = `El requerimiento: ${requirement}`;
   backdrop.classList.add('is-visible');
   backdrop.setAttribute('aria-hidden', 'false');
 
