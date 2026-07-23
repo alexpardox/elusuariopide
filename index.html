@@ -428,6 +428,48 @@
         margin-bottom: 14px;
       }
 
+      .toast-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .toast-tools {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .toast-counter {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 74px;
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: #e2e8f0;
+        color: #0f172a;
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+
+      .toast-counter.is-timeout {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+
+      .toast-close {
+        border: 0;
+        border-radius: 10px;
+        padding: 8px 12px;
+        background: #e2e8f0;
+        color: #0f172a;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
       .toast h3 {
         margin: 0;
         font-size: clamp(1.35rem, 2.2vw, 2rem);
@@ -508,7 +550,13 @@
 
     <div class="toast-backdrop" id="request-toast" aria-hidden="true">
       <div class="toast" role="dialog" aria-modal="true" aria-labelledby="toast-title">
-        <div class="eyebrow">Requerimiento seleccionado</div>
+        <div class="toast-head">
+          <div class="eyebrow">Requerimiento seleccionado</div>
+          <div class="toast-tools">
+            <div class="toast-counter" id="toast-counter">02:00</div>
+            <button class="toast-close" id="toast-close" type="button" aria-label="Cerrar popup">Cerrar</button>
+          </div>
+        </div>
         <h3 id="toast-title">El usuario pide saber el estatus de:</h3>
         <div class="request" id="toast-request"></div>
       </div>

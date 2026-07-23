@@ -5,6 +5,8 @@ const FALLBACK_COLORS = ['#8B5CF6', '#3B82F6', '#22C55E', '#F97316', '#EC4899', 
 let currentConfig = null;
 let loadPromise = null;
 let activeTab = 'game';
+let toastCountdownTimer = null;
+let toastAutoCloseTimer = null;
 
 function cloneConfig(config) {
   return JSON.parse(JSON.stringify(config));
@@ -376,6 +378,43 @@ function refreshVisibleView() {
   }
 }
 
+function formatSecondsAsClock(totalSeconds) {
+  const seconds = Math.max(0, totalSeconds);
+  const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const remainder = String(seconds % 60).padStart(2, '0');
+  return `${minutes}:${remainder}`;
+}
+
+function updateToastCounter(secondsLeft) {
+  const counter = document.getElementById('toast-counter');
+
+  if (!counter) {
+    return;
+  }
+
+  counter.textContent = formatSecondsAsClock(secondsLeft);
+  counter.classList.toggle('is-timeout', secondsLeft <= 0);
+}
+
+function clearToastTimers() {
+  window.clearInterval(toastCountdownTimer);
+  window.clearTimeout(toastAutoCloseTimer);
+  toastCountdownTimer = null;
+  toastAutoCloseTimer = null;
+}
+
+function closeRequestToast() {
+  const backdrop = document.getElementById('request-toast');
+
+  if (!backdrop) {
+    return;
+  }
+
+  clearToastTimers();
+  backdrop.classList.remove('is-visible');
+  backdrop.setAttribute('aria-hidden', 'true');
+}
+
 function showRequestToast(requirement) {
   const backdrop = document.getElementById('request-toast');
   const requestText = document.getElementById('toast-request');
@@ -384,15 +423,32 @@ function showRequestToast(requirement) {
     return;
   }
 
-  requestText.textContent = `El requerimiento: ${requirement}`;
+  requestText.textContent = `El usuario pide saber el estatus de: ${requirement}`;
   backdrop.classList.add('is-visible');
   backdrop.setAttribute('aria-hidden', 'false');
 
-  window.clearTimeout(showRequestToast.hideTimer);
-  showRequestToast.hideTimer = window.setTimeout(() => {
-    backdrop.classList.remove('is-visible');
-    backdrop.setAttribute('aria-hidden', 'true');
-  }, 3500);
+  clearToastTimers();
+
+  let countdownSeconds = 120;
+  updateToastCounter(countdownSeconds);
+
+  toastCountdownTimer = window.setInterval(() => {
+    countdownSeconds -= 1;
+
+    if (countdownSeconds <= 0) {
+      countdownSeconds = 0;
+      updateToastCounter(countdownSeconds);
+      window.clearInterval(toastCountdownTimer);
+      toastCountdownTimer = null;
+      return;
+    }
+
+    updateToastCounter(countdownSeconds);
+  }, 1000);
+
+  toastAutoCloseTimer = window.setTimeout(() => {
+    closeRequestToast();
+  }, 200000);
 }
 
 function handleBoardClick(event) {
@@ -569,6 +625,7 @@ function bindGameUI() {
   const turnSelect = document.getElementById('turn-select');
   const board = document.getElementById('board');
   const backdrop = document.getElementById('request-toast');
+  const closeToastButton = document.getElementById('toast-close');
   const tabButtons = document.querySelectorAll('[data-tab-target]');
 
   if (turnSelect) {
@@ -584,10 +641,13 @@ function bindGameUI() {
   if (backdrop) {
     backdrop.addEventListener('click', (event) => {
       if (event.target === backdrop) {
-        backdrop.classList.remove('is-visible');
-        backdrop.setAttribute('aria-hidden', 'true');
+        closeRequestToast();
       }
     });
+  }
+
+  if (closeToastButton) {
+    closeToastButton.addEventListener('click', closeRequestToast);
   }
 
   tabButtons.forEach((button) => {
