@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>El Usuario Pide</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7fb;
+        --panel: rgba(255, 255, 255, 0.88);
+        --panel-border: rgba(15, 23, 42, 0.08);
+        --text: #0f172a;
+        --muted: #64748b;
+        --shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+        --radius: 24px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(139, 92, 246, 0.16), transparent 30%),
+          radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 26%),
+          radial-gradient(circle at bottom center, rgba(34, 197, 94, 0.12), transparent 28%),
+          var(--bg);
+      }
+
+      .app-shell {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 40px;
+      }
+
+      .hero {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+        backdrop-filter: blur(18px);
+      }
+
+      .hero h1 {
+        margin: 0 0 8px;
+        font-size: clamp(2rem, 4vw, 3.25rem);
+        letter-spacing: -0.04em;
+      }
+
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.55;
+      }
+
+      .tabs {
+        display: inline-flex;
+        gap: 10px;
+        margin-top: 20px;
+        padding: 6px;
+        border-radius: 18px;
+        background: rgba(15, 23, 42, 0.06);
+      }
+
+      .tab-button {
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        padding: 12px 16px;
+        border-radius: 14px;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        transition:
+          background 160ms ease,
+          color 160ms ease,
+          transform 160ms ease;
+      }
+
+      .tab-button:hover {
+        transform: translateY(-1px);
+      }
+
+      .tab-button.is-active {
+        background: #fff;
+        color: var(--text);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      }
+
+      .view.is-hidden {
+        display: none;
+      }
+
+      .config-panel {
+        display: grid;
+        gap: 16px;
+      }
+
+      .config-toolbar {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px;
+        border-radius: var(--radius);
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .toolbar-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .action-button {
+        border: 0;
+        border-radius: 16px;
+        padding: 13px 18px;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        transition:
+          transform 160ms ease,
+          opacity 160ms ease,
+          box-shadow 160ms ease;
+      }
+
+      .action-button:hover {
+        transform: translateY(-1px);
+      }
+
+      .action-button.primary {
+        background: linear-gradient(135deg, #111827, #334155);
+        color: #fff;
+        box-shadow: 0 16px 30px rgba(15, 23, 42, 0.2);
+      }
+
+      .action-button.secondary {
+        background: #fff;
+        color: var(--text);
+        border: 1px solid rgba(15, 23, 42, 0.12);
+      }
+
+      .action-button.danger {
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid rgba(185, 28, 28, 0.16);
+      }
+
+      .category-editor-list {
+        display: grid;
+        gap: 16px;
+      }
+
+      .category-editor {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+        overflow: hidden;
+      }
+
+      .category-editor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 18px;
+        color: #fff;
+        font-weight: 700;
+      }
+
+      .category-editor-body {
+        padding: 18px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .field-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(12, 1fr);
+      }
+
+      .field {
+        grid-column: span 12;
+        display: grid;
+        gap: 8px;
+      }
+
+      .field label,
+      .requirement-item label {
+        font-weight: 700;
+      }
+
+      .field input,
+      .requirement-item input,
+      .category-editor input[type="text"] {
+        width: 100%;
+        border: 1px solid rgba(15, 23, 42, 0.14);
+        border-radius: 14px;
+        padding: 13px 14px;
+        font: inherit;
+        background: #fff;
+      }
+
+      .field input[type="color"] {
+        width: 100%;
+        min-height: 48px;
+        border-radius: 14px;
+        border: 1px solid rgba(15, 23, 42, 0.14);
+        background: #fff;
+        padding: 4px;
+      }
+
+      .requirement-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .requirement-item {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .mini-button {
+        border: 0;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        background: rgba(15, 23, 42, 0.08);
+        color: var(--text);
+      }
+
+      .mini-button.danger {
+        background: rgba(239, 68, 68, 0.12);
+        color: #b91c1c;
+      }
+
+      .category-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .status-line {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 16px;
+        margin-top: 22px;
+        align-items: end;
+      }
+
+      .control-card,
+      .board-card {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .control-card {
+        grid-column: span 12;
+        padding: 18px;
+      }
+
+      .control-card label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .control-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      select {
+        appearance: none;
+        border: 1px solid rgba(15, 23, 42, 0.14);
+        background: #fff;
+        color: var(--text);
+        border-radius: 16px;
+        padding: 14px 16px;
+        min-width: 240px;
+        font-size: 1rem;
+        outline: none;
+      }
+
+      .hint {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .board {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .board-card {
+        grid-column: span 12;
+        overflow: hidden;
+        position: relative;
+        min-height: 280px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        cursor: pointer;
+        transition:
+          transform 180ms ease,
+          opacity 180ms ease,
+          box-shadow 180ms ease;
+      }
+
+      .board-card:hover {
+        transform: translateY(-4px);
+      }
+
+      .board-card:disabled,
+      .board-card.is-disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+        transform: none;
+        filter: grayscale(0.25);
+      }
+
+      .board-card .badge {
+        display: inline-flex;
+        align-self: flex-start;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.22);
+        color: rgba(255, 255, 255, 0.96);
+        padding: 8px 12px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .board-card h2 {
+        margin: 16px 0 8px;
+        font-size: clamp(1.6rem, 3vw, 2.4rem);
+      }
+
+      .board-card p {
+        margin: 0;
+        line-height: 1.6;
+        max-width: 28rem;
+      }
+
+      .board-card .foot {
+        margin-top: 18px;
+        font-size: 0.95rem;
+        opacity: 0.92;
+      }
+
+      .empty-state {
+        grid-column: 1 / -1;
+        padding: 28px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .toast-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.46);
+        display: grid;
+        place-items: center;
+        padding: 18px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms ease;
+      }
+
+      .toast-backdrop.is-visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .toast {
+        width: min(640px, 100%);
+        border-radius: 28px;
+        background: #fff;
+        box-shadow: 0 30px 100px rgba(15, 23, 42, 0.24);
+        padding: 28px;
+        transform: translateY(18px) scale(0.98);
+        transition: transform 220ms ease;
+      }
+
+      .toast-backdrop.is-visible .toast {
+        transform: translateY(0) scale(1);
+      }
+
+      .toast .eyebrow {
+        display: inline-flex;
+        border-radius: 999px;
+        padding: 7px 12px;
+        background: linear-gradient(90deg, #8b5cf6, #3b82f6, #22c55e);
+        color: #fff;
+        font-weight: 700;
+        margin-bottom: 14px;
+      }
+
+      .toast h3 {
+        margin: 0;
+        font-size: clamp(1.35rem, 2.2vw, 2rem);
+        line-height: 1.25;
+      }
+
+      .toast .request {
+        margin-top: 12px;
+        font-size: 1.05rem;
+        color: var(--muted);
+      }
+
+      @media (min-width: 720px) {
+        .field.half {
+          grid-column: span 6;
+        }
+
+        .control-card {
+          grid-column: span 7;
+        }
+
+        .board-card {
+          grid-column: span 4;
+        }
+      }
+    </style>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <h1>El Usuario Pide</h1>
+        <p>Elige el turno, toca una tarjeta habilitada y el sistema te mostrará un requerimiento aleatorio de esa categoría.</p>
+
+        <div class="tabs" role="tablist" aria-label="Vistas principales">
+          <button class="tab-button is-active" id="tab-game" type="button" data-tab-target="game" role="tab" aria-selected="true">Juego</button>
+          <button class="tab-button" id="tab-config" type="button" data-tab-target="config" role="tab" aria-selected="false">Configuración</button>
+        </div>
+
+        <div class="view" id="game-view">
+          <div class="controls">
+            <div class="control-card">
+              <label for="turn-select">Turno actual</label>
+              <div class="control-row">
+                <select id="turn-select" aria-label="Seleccionar turno">
+                  <option value="soraya">Soraya</option>
+                  <option value="carlos">Carlos</option>
+                  <option value="jazmin">Jazmín</option>
+                </select>
+                <div class="hint" id="turn-hint">Cuando el turno sea de Soraya, su tarjeta quedará deshabilitada.</div>
+              </div>
+            </div>
+          </div>
+
+          <section class="board" id="board" aria-label="Tarjetas de jugadores"></section>
+        </div>
+
+        <div class="view is-hidden" id="config-view" aria-label="Vista de configuración">
+          <div class="config-panel">
+            <div class="config-toolbar">
+              <div>
+                <strong>Editor de configuración</strong>
+                <div class="status-line" id="config-status">Agrega jugadores, colores y requerimientos por categoría.</div>
+              </div>
+              <div class="toolbar-actions">
+                <button class="action-button secondary" id="add-category-button" type="button">Agregar jugador/categoría</button>
+                <button class="action-button primary" id="save-config-button" type="button">Guardar cambios</button>
+                <button class="action-button secondary" id="export-config-button" type="button">Exportar JSON</button>
+                <button class="action-button danger" id="reset-config-button" type="button">Restablecer valores por defecto</button>
+              </div>
+            </div>
+
+            <div class="category-editor-list" id="category-editor-list"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast-backdrop" id="request-toast" aria-hidden="true">
+      <div class="toast" role="dialog" aria-modal="true" aria-labelledby="toast-title">
+        <div class="eyebrow">Requerimiento seleccionado</div>
+        <h3 id="toast-title">El usuario pide saber el estatus de:</h3>
+        <div class="request" id="toast-request"></div>
+      </div>
+    </div>
+  </body>
+</html>

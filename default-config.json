@@ -1,0 +1,32 @@
+{
+  "categorias": [
+    {
+      "id": "soraya",
+      "nombre": "Soraya",
+      "colorHex": "#8B5CF6",
+      "requerimientos": [
+        "La aplicación debe permitir iniciar sesión con correo corporativo y autenticación multifactor.",
+        "El sistema debe registrar auditoría de accesos, cambios y exportaciones de información.",
+        "La solución debe desplegarse en un entorno cloud con monitoreo centralizado y alertas."]
+    },
+    {
+      "id": "carlos",
+      "nombre": "Carlos",
+      "colorHex": "#3B82F6",
+      "requerimientos": [
+        "La plataforma debe exponer una API REST documentada con OpenAPI para integrarse con otros sistemas.",
+        "El backend debe soportar al menos 500 usuarios concurrentes sin degradar tiempos de respuesta.",
+        "Los datos críticos deben cifrarse en tránsito y en reposo siguiendo políticas de seguridad."]
+    },
+    {
+      "id": "jazmin",
+      "nombre": "Jazmín",
+      "colorHex": "#22C55E",
+      "requerimientos": [
+        "La interfaz debe ser responsive y funcionar correctamente en desktop, tablet y móvil.",
+        "El sistema debe permitir cargar, validar y versionar archivos de configuración del proyecto.",
+        "La aplicación debe incluir reportes descargables en PDF y Excel para seguimiento operativo."
+      ]
+    }
+  ]
+}
